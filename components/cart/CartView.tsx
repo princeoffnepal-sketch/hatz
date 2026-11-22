@@ -1,3 +1,6 @@
+import { delivery } from "@/config/delivery";
+import { getProducts } from "@/lib/catalog.server";
+import { ShippingReward } from "./ShippingReward";
 import Link from "next/link";
 import { getCart } from "@/lib/cart/server";
 import { getCheckoutAvailability } from "@/lib/checkout/gate.server";
@@ -19,6 +22,11 @@ export async function CartView({ variant }: { variant: "drawer" | "page" }) {
   const availability = getCheckoutAvailability();
   const copy = deliveryCopy();
   const isPage = variant === "page";
+  const service = delivery.services[0];
+  const suggestions = getProducts()
+    .filter(p => !cart.lines.some(line => line.productId === p.id) && p.variants.length === 1 && p.variants[0].available && !p.sizes.length)
+    .sort((a, b) => Number(b.featured) - Number(a.featured) || a.featuredRank - b.featuredRank)
+    .slice(0, 2);
 
   if (!cart.lines.length) {
     return (
@@ -41,6 +49,7 @@ export async function CartView({ variant }: { variant: "drawer" | "page" }) {
     <div className={isPage ? "grid gap-10 lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-16" : "flex h-full flex-col"}>
       <CartViewTracker cart={cart} drawer={!isPage} />
       <div className={isPage ? "" : "flex-1 px-5"}>
+        <ShippingReward cart={cart} threshold={service?.freeMinQuantity ?? 0} shippingCents={service?.priceCents ?? 0} suggestions={suggestions}>
         {cart.removedLines.length > 0 && (
           <p className="notice my-4">Some items were removed because they&apos;re no longer offered.</p>
         )}
@@ -84,6 +93,7 @@ export async function CartView({ variant }: { variant: "drawer" | "page" }) {
             </li>
           ))}
         </ul>
+        </ShippingReward>
       </div>
 
       <div className={isPage ? "lg:sticky lg:top-24 lg:self-start" : "border-t hairline bg-paper px-5 py-5"}>
@@ -111,7 +121,7 @@ export async function CartView({ variant }: { variant: "drawer" | "page" }) {
                   : "Calculated at checkout"}
             </dd>
           </div>
-          <p className="text-xs text-ink-soft">{cart.shipping.message}</p>
+
           <div className="flex justify-between gap-4">
             <dt>Taxes</dt>
             <dd className="text-right text-ink-soft">
