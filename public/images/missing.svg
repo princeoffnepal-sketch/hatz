@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2000" viewBox="0 0 800 1000" role="img" aria-label="Image unavailable">
+  <rect width="800" height="1000" fill="#ECE8DF"/>
+  <path d="M250 560 C252 440 320 380 400 380 C480 380 548 440 550 560 Z" fill="none" stroke="#B5AE9F" stroke-width="3" stroke-dasharray="8 8"/>
+  <path d="M236 560 Q400 535 564 560 Q578 606 400 628 Q222 606 236 560 Z" fill="none" stroke="#B5AE9F" stroke-width="3" stroke-dasharray="8 8"/>
+  <text x="400" y="720" font-family="ui-monospace, Menlo, monospace" font-size="15" letter-spacing="4" fill="#857F72" text-anchor="middle">IMAGE UNAVAILABLE</text>
+</svg>
