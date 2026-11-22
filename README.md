@@ -6,7 +6,7 @@ Next.js storefront prepared for **Vercel**, with Stripe Checkout and a protected
 
 1. Import `princeoffnepal-sketch/hatz` in Vercel. Root directory: repository root. Framework: **Next.js**. Node: **22.x**. Install: `npm ci`. Build: `npm run build`. Leave Output Directory at the framework default.
 2. Add the environment variables below. Start with `STORE_MODE=demo`; the catalog/cart work, but payment remains disabled.
-3. Create a **Turso libSQL database**, copy its URL and auth token into a local ignored `.env.local`, then run `npm ci` and `npm run db:migrate` once against that database. Add the same database variables to Vercel. Use a separate database for preview/test deployments.
+3. Create a **Turso libSQL database** and connect its URL and auth token to Vercel's Production environment. The Vercel build applies checked, repeatable migrations before building when the production database is configured; a migration failure stops the deployment. This works with sensitive variables without downloading their values. Preview builds do not run migrations; use a separate database for preview/test deployments. For a separately configured local database, run `npm run db:migrate`.
 4. Run `npm run admin:password`. Enter the admin password at the hidden prompt and copy the resulting hash into Vercel's `ADMIN_PASSWORD_HASH`. No plaintext password or password hash is committed. `/admin` needs this hash and the initialized database.
 5. Deploy. Set `NEXT_PUBLIC_SITE_URL` to your actual HTTPS Vercel/custom domain and redeploy before enabling checkout.
 
