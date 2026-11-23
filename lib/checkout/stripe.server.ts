@@ -41,6 +41,8 @@ export async function createCheckoutSession(cart: Cart, now = new Date()): Promi
       shipping_rate_data: {
         type: "fixed_amount",
         display_name: service.label,
+        tax_behavior: "exclusive",
+        tax_code: "txcd_92010001",
         fixed_amount: { amount: shippingPriceFor(service, subtotal, cart.totalQuantity), currency: "usd" },
         delivery_estimate: {
           minimum: { unit: "business_day", value: total.min },
@@ -52,7 +54,7 @@ export async function createCheckoutSession(cart: Cart, now = new Date()): Promi
   });
 
   const estimate = estimateDelivery(delivery, delivery.services[0].id, now, subtotal, cart.totalQuantity);
-  const production = delivery.productionBusinessDays!;
+  const totalDays = totalBusinessDayRange(delivery, delivery.services[0])!;
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -63,8 +65,10 @@ export async function createCheckoutSession(cart: Cart, now = new Date()): Promi
         price_data: {
           currency: line.unitPrice.currency.toLowerCase(),
           unit_amount: line.unitPrice.amount,
+          tax_behavior: "exclusive",
           product_data: {
             name: line.name,
+            tax_code: "txcd_30060006", // Stripe Tax: Hats. Keep separate from Mogfit’s account default.
             description: [line.colorName, line.sizeName].filter(Boolean).join(" · "),
             // Stripe needs absolute URLs; only real photos are sent, never placeholders.
             images:
@@ -78,15 +82,17 @@ export async function createCheckoutSession(cart: Cart, now = new Date()): Promi
     shipping_address_collection: { allowed_countries: countries },
     shipping_options: shippingOptions,
     automatic_tax: config.stripe.automaticTax ? { enabled: true } : undefined,
+    payment_intent_data: { metadata: { store: "exclusive-hatz", commission_per_hat_cents: "700" } },
     custom_text: {
       submit: {
-        message: `Made to order: production takes about ${formatDayRange(production)} before your hat ships.`,
+        message: `Exclusive Hatz is operated by Mogfit. Your statement shows MOGFIT. Estimated delivery: ${formatDayRange(totalDays)} from purchase, including production.`,
       },
     },
     metadata: {
       store: "exclusive-hatz",
       variant_quantities: cart.lines.map((l) => `${l.variantId}:${l.quantity}`).join(","),
       delivery_config_version: delivery.version,
+      delivery_business_days: `${totalDays.min}-${totalDays.max}`,
       promised_arrival_earliest: estimate ? toIsoDate(estimate.arrival.earliest) : "",
       promised_arrival_latest: estimate ? toIsoDate(estimate.arrival.latest) : "",
       split_shipment: delivery.splitShipment ?? "",

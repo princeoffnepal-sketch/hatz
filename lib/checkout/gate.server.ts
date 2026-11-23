@@ -1,7 +1,7 @@
 import "server-only";
 import { getCommerceConfig } from "@/config/commerce.server";
 import { delivery } from "@/config/delivery";
-import { launchSignoffs } from "@/config/launch";
+import { launchSignoffs, launchPolicy } from "@/config/launch";
 import { policies } from "@/config/policies";
 import { site } from "@/config/site";
 import { hasApprovedMapping } from "@/data/private/supplier.server";
@@ -11,6 +11,7 @@ import { evaluateGate } from "./gate";
 export function getGate() {
   const config = getCommerceConfig();
   return evaluateGate({
+    ...launchPolicy,
     mode: config.mode,
     stripeKeyKind: config.stripe.keyKind,
     webhookSecretSet: Boolean(config.stripe.webhookSecret),

@@ -4,7 +4,7 @@ Next.js storefront prepared for **Vercel**, with Stripe Checkout and a protected
 
 ## Deploy to Vercel
 
-1. Import `princeoffnepal-sketch/hatz` in Vercel. Root directory: repository root. Framework: **Next.js**. Node: **22.x**. Install: `npm ci`. Build: `npm run build`. Leave Output Directory at the framework default.
+1. Import `princeoffnepal-sketch/hatz` in Vercel. Root directory: repository root. Framework: **Next.js**. Node: **22.x**. Install: `npm ci`. Build: use the `vercel.json` command. Leave Output Directory at the framework default.
 2. Add the environment variables below. Start with `STORE_MODE=demo`; the catalog/cart work, but payment remains disabled.
 3. Create a **Turso libSQL database** and connect its URL and auth token to Vercel's Production environment. The Vercel build applies checked, repeatable migrations before building when the production database is configured; a migration failure stops the deployment. This works with sensitive variables without downloading their values. Preview builds do not run migrations; use a separate database for preview/test deployments. For a separately configured local database, run `npm run db:migrate`.
 4. Run `npm run admin:password`. Enter the admin password at the hidden prompt and copy the resulting hash into Vercel's `ADMIN_PASSWORD_HASH`. No plaintext password or password hash is committed. `/admin` needs this hash and the initialized database.
@@ -28,18 +28,24 @@ Never put credentials in `NEXT_PUBLIC_` variables. Vercel environment changes re
 
 - Nine snapbacks, 35 original owner-supplied photos, **$65 each**.
 - U.S. only. **$7.50 shipping for one hat; free for 2+ payable hats**, including mixed designs.
-- Estimated transit: **3 business days after dispatch**. Production time is separate and remains unconfirmed.
-- Support: `exclusivehatzz@gmail.com`.
+- Merchant-confirmed estimated delivery: **3–5 business days from purchase to doorstep, including production**. Exact dispatch dates and calendar arrival dates are not invented.
+- Operated by **Mogfit**. Customer card statements show MOGFIT; this is disclosed at checkout. Support: `exclusivehatzz@gmail.com`.
 - Cancellation before shipment. Eligible unused/unworn/undamaged returns requested within 14 days; customer pays return postage. Damaged arrivals are replaced after return, with customer-paid return postage, subject to applicable rights. Return instructions are supplied by support.
-- Protected admin at `/admin`: sales, shopping activity, orders, submissions and **$7 per paid hat** commission. Two hats earn $14. Refunds and disputes adjust/hold commission. Recording a payout records money received; it does not transfer money. Automatic revenue splitting is not configured.
+- Protected admin at `/admin`: sales, shopping activity, orders, submissions and **$7 per paid hat** commission. Two hats earn $14. Refunds and disputes adjust/hold commission. Owner-payment records track manual settlements; they do not transfer money. Automatic revenue splitting is not configured.
 
-## Before accepting real payments
+## Payments and manual operations
 
-The code is deployable; the store is **not yet ready to collect live payments**. Remaining setup includes Stripe, supplier SKU mapping and fulfillment, production timing, fit/material verification, business identity, final privacy/terms, return destination, customer email/tracking and an end-to-end order/refund check. The launch gate is in `lib/checkout/gate.ts` and `/launch-readiness` (admin-only). Do not bypass it to force payment on.
+Production uses Stripe-hosted Checkout with live credentials stored as sensitive Vercel variables, never in Git. The $65 catalog prices and $7.50/free-at-two shipping rules are calculated on the server. The webhook handles paid orders, refunds and disputes; checkout return verification is an idempotent backup for delayed webhooks. Only paid sessions marked `store=exclusive-hatz` from the matching live/test mode produce order confirmations.
 
-Register these Stripe webhook events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.updated`, `charge.dispute.closed`. Orders are idempotent by checkout session ID. Unsubmitted supplier orders remain `awaiting_supplier`; no supplier automation is connected yet.
+The merchant opted to launch with manual fulfillment and without a completed real purchase/delivery test. `config/launch.ts` records that policy; it does not claim an order was tested or delivered. Real photos and published descriptions are required; unmeasured specifications remain unpublished. Supplier automation and a fulfilled test order remain visible operational checks in the protected launch page. Core payment, delivery, catalog, policy and business-contact checks still gate checkout.
 
-The public preview remains noindex in `app/layout.tsx` and `app/robots.ts`. Enable indexing only after launch setup is complete.
+**Every order needs manual action.** Admin users can open each order's items, customer contact and shipping address, submit it to the fulfillment partner, and record production status and carrier/tracking details. The customer confirmation link displays recorded tracking. Email notifications and supplier forwarding are not connected. Check admin regularly and send customer updates manually.
+
+The website partner collects the full payment, retains **$7 per eligible paid hat**, handles refunds/disputes, and pays the owner separately. The admin can record actual payments to the owner, but never initiates transfers. No owner payout balance is calculated because fee, shipping, tax and other cost allocations have not been agreed. Historical partner-payment records are preserved in the original table; new owner transfers use `owner_payments`.
+
+Register these snapshot webhook events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.updated`, `charge.dispute.closed`. The endpoint is `/api/stripe/webhook`; its API version matches the installed Stripe SDK. Update sensitive `STRIPE_SECRET_KEY` and redeploy when rotating the API key. Keep the existing webhook secret unless rotating that endpoint's signing secret too.
+
+Stripe Tax is controlled by `STRIPE_AUTOMATIC_TAX`; enable only after configuring the merchant's tax settings and applicable registrations. No real charge, refund, supplier submission or bank transfer is performed by deployment. Public indexing remains disabled until the merchant is ready to promote the store.
 
 ## Local development
 

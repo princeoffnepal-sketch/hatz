@@ -1,5 +1,5 @@
 export const COMMISSION_PER_HAT=700;
-export type LedgerOrder={id:string;payment_intent:string;created:number;live:number;currency:string;subtotal:number;total:number;quantity:number;items:string;commission_rate:number;fulfillment:string;refund_amount:number;refunded_units:number|null;reviewed_refund:number|null;dispute_status?:string|null};
+export type LedgerOrder={id:string;payment_intent:string;created:number;live:number;currency:string;subtotal:number;total:number;quantity:number;items:string;commission_rate:number;fulfillment:string;refund_amount:number;refunded_units:number|null;reviewed_refund:number|null;dispute_status?:string|null;customer_name?:string|null;customer_email?:string|null;shipping_address?:string|null;tracking_number?:string|null;carrier?:string|null;tracking_url?:string|null};
 /** Partial refunds do not identify returned hats. Hold commission until allocated by an admin. */
 export function commissionFor(order:LedgerOrder){
  const gross=order.quantity*order.commission_rate;

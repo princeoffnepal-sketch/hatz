@@ -52,6 +52,8 @@ export type DeliverySettings = {
   /** Review/cancellation hold before submission to production, in business days. */
   acceptanceHoldBusinessDays: number;
   productionBusinessDays: DayRange | null;
+  /** Merchant-confirmed order-to-door estimate; do not invent a production/transit split. */
+  totalDeliveryBusinessDays?: DayRange;
   productionCalendar: BusinessCalendar;
   transitCalendar: BusinessCalendar;
   regions: ShippingRegion[];
@@ -61,12 +63,13 @@ export type DeliverySettings = {
 };
 
 export const delivery: DeliverySettings = {
-  status: "unconfirmed",
-  version: "us-two-hat-free-2026-11-22",
+  status: "confirmed",
+  version: "us-order-to-door-3-5-2026-11-22",
   timezone: "America/New_York",
   orderCutoffHour: null,
   acceptanceHoldBusinessDays: 0,
   productionBusinessDays: null,
+  totalDeliveryBusinessDays: { min: 3, max: 5 },
   productionCalendar: { workingDays: [1, 2, 3, 4, 5], holidays: [] },
   transitCalendar: { workingDays: [1, 2, 3, 4, 5], holidays: [] },
   regions: [

@@ -104,7 +104,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": true,
     "featuredRank": 1,
@@ -207,7 +207,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": true,
     "featuredRank": 2,
@@ -320,7 +320,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": false,
     "featuredRank": 3,
@@ -433,7 +433,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": false,
     "featuredRank": 4,
@@ -546,7 +546,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": false,
     "featuredRank": 5,
@@ -659,7 +659,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": true,
     "featuredRank": 6,
@@ -772,7 +772,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": false,
     "featuredRank": 7,
@@ -885,7 +885,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": false,
     "featuredRank": 8,
@@ -998,7 +998,7 @@ export const catalog: Product[] = [
     "shippingProfileId": "standard",
     "policyRefs": {
       "returns": "returns-owner-2026-11",
-      "shipping": "shipping-draft"
+      "shipping": "shipping-us-2026-11"
     },
     "featured": true,
     "featuredRank": 9,

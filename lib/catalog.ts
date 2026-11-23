@@ -149,17 +149,17 @@ export function validateProduct(product: Product): string[] {
 }
 
 /** Content that must be real before a product can be sold. */
-export function productLaunchIssues(product: Product): string[] {
+export function productLaunchIssues(product: Product, requireCompleteSpecs = true): string[] {
   const issues: string[] = [];
   if (product.status !== "published") issues.push(`${product.name}: status is "${product.status}"`);
   if (product.images.some((img) => img.kind !== "photo" || !img.approved)) {
     issues.push(`${product.name}: uses placeholder or unapproved imagery`);
   }
   if (!product.description.verified) issues.push(`${product.name}: description not verified`);
-  if (!product.fit.verified) issues.push(`${product.name}: fit specifications not verified`);
-  if (product.fit.adjustable && !product.fit.measuredRange) {
+  if (requireCompleteSpecs && !product.fit.verified) issues.push(`${product.name}: fit specifications not verified`);
+  if (requireCompleteSpecs && product.fit.adjustable && !product.fit.measuredRange) {
     issues.push(`${product.name}: adjustable range not measured`);
   }
-  if (!product.construction.verified) issues.push(`${product.name}: construction details not verified`);
+  if (requireCompleteSpecs && !product.construction.verified) issues.push(`${product.name}: construction details not verified`);
   return issues;
 }

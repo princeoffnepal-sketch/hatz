@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { delivery as demoDelivery } from "@/config/delivery";
+import { delivery as storeDelivery } from "@/config/delivery";
 import { addBusinessDays, estimateDelivery, shippingPriceFor, toIsoDate, totalBusinessDayRange, validateDelivery } from "@/lib/delivery";
 import { deliveryCopy } from "@/lib/disclosure";
 import { confirmedDelivery } from "./fixtures";
+
+const demoDelivery = { ...storeDelivery, status: 'unconfirmed' as const, totalDeliveryBusinessDays: undefined };
 
 const iso = (d: { year: number; month: number; day: number }) => toIsoDate(d);
 
@@ -36,6 +38,18 @@ describe("delivery configuration validation", () => {
     expect(copy.configured).toBe(false);
     expect(copy.production).not.toMatch(/\d/);
     expect(copy.shipping).toContain("3 business days after dispatch");
+  });
+});
+
+describe("merchant-confirmed order-to-door range", () => {
+  it("uses 3–5 days including production without inventing dispatch or calendar dates", () => {
+    expect(validateDelivery(storeDelivery)).toEqual([]);
+    expect(totalBusinessDayRange(storeDelivery, storeDelivery.services[0])).toEqual({min:3,max:5});
+    expect(estimateDelivery(storeDelivery, "standard", new Date())).toBeNull();
+    expect(deliveryCopy(storeDelivery).production).toContain("including production");
+  });
+  it("rejects an inverted total range", () => {
+    expect(validateDelivery({...storeDelivery,totalDeliveryBusinessDays:{min:5,max:3}}).length).toBeGreaterThan(0);
   });
 });
 

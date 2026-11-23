@@ -33,7 +33,7 @@ export async function beginCheckout(cart: Cart): Promise<BeginCheckoutResult> {
   try {
     return { kind: "redirect", url: await createCheckoutSession(cart) };
   } catch (error) {
-    console.error("[checkout] Stripe session creation failed", error instanceof Error ? error.message : error);
+    console.error("[checkout] Stripe session creation failed", error instanceof Error ? error.name : "UnknownError");
     return { kind: "error", message: "Checkout couldn't start. Please try again in a moment." };
   }
 }

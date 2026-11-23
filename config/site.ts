@@ -51,8 +51,8 @@ export const site = {
     {
       heading: "Legal",
       links: [
-        { label: "Privacy (draft)", href: "/privacy" },
-        { label: "Terms (draft)", href: "/terms" },
+        { label: "Privacy", href: "/privacy" },
+        { label: "Terms", href: "/terms" },
       ],
     },
   ],
@@ -74,7 +74,7 @@ export const site = {
 
   /** Legal business identity shown in the footer and policy pages. Required before launch. */
   business: {
-    legalName: null as string | null,
+    legalName: "Mogfit" as string | null,
     address: null as string | null,
   },
 
@@ -108,7 +108,7 @@ export const site = {
     },
     {
       q: "How long will delivery take?",
-      a: "Shipping within the USA costs $7.50 for one hat and is free with 2 or more hats. Estimated transit is 3 business days after dispatch. Production happens before shipping and is additional.",
+      a: "Shipping within the USA costs $7.50 for one hat and is free with 2 or more hats. Estimated delivery is 3–5 business days from purchase to doorstep, including production.",
     },
     {
       q: "How do I know which fit to choose?",

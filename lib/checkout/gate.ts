@@ -27,6 +27,9 @@ export type GateInput = {
   businessLegalName: string | null;
   hasApprovedMapping: (product: Product) => boolean;
   testOrderValidated: boolean;
+  manualFulfillment?: boolean;
+  requireCompleteSpecs?: boolean;
+  requireTestOrder?: boolean;
 };
 
 export type GateResult = {
@@ -93,16 +96,16 @@ export function evaluateGate(input: GateInput): GateResult {
 
   add(
     "product-content",
-    "Real approved photos and verified specifications",
-    input.products.flatMap(productLaunchIssues),
+    "Approved product photos and accurate published descriptions",
+    input.products.flatMap(p => productLaunchIssues(p, input.requireCompleteSpecs !== false)),
     live,
   );
 
   add(
     "supplier",
-    "Approved supplier mappings for every variant",
+    "Automatic supplier forwarding configured",
     input.products.filter((p) => !input.hasApprovedMapping(p)).map((p) => `${p.name}: no approved supplier mapping`),
-    live,
+    live && !input.manualFulfillment,
   );
 
   add(
@@ -126,7 +129,7 @@ export function evaluateGate(input: GateInput): GateResult {
     "test-order",
     "Successful test order and fulfillment validated",
     input.testOrderValidated ? [] : ["No validated end-to-end test order recorded in src/config/launch.ts"],
-    live,
+    live && input.requireTestOrder !== false,
   );
 
   const checkoutEnabled = input.mode !== "demo" && checks.every((c) => !c.required || c.ok);

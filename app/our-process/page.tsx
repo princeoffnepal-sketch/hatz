@@ -33,9 +33,9 @@ export default function ProcessPage() {
             After your order is accepted, our partner makes or decorates the hat and ships it to you. We hold no finished stock, which is
             why production happens before shipping.
           </p>
-          <h3>Production and delivery are separate</h3>
+          <h3>From order to doorstep</h3>
           <p>
-            Production time is how long it takes to make your hat. Transit time starts when the carrier receives it. Shipping is estimated at three business days after dispatch. Production timing is still being confirmed. Details are on the{" "}
+            Estimated delivery is 3–5 business days from purchase, including both production and transit. Details are on the{" "}
             <Link href="/shipping" className="link text-ink">
               shipping page
             </Link>
@@ -43,8 +43,7 @@ export default function ProcessPage() {
           </p>
           <h3>Quality</h3>
           <p>
-            Before a design goes on sale, we review physical samples of it. Our detailed quality checks will be described here once the
-            production partner and sample process are finalized.
+            We show the product photographs supplied for each design. If your hat arrives damaged, contact us with your order number and photographs so we can arrange the replacement described in our returns policy.
           </p>
         </Prose>
       </section>

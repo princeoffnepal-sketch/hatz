@@ -1,32 +1,13 @@
 import type { Metadata } from "next";
-import { DraftBanner, PageHeader, Pending, Prose } from "@/components/content/Content";
-import { policies } from "@/config/policies";
-
-export const metadata: Metadata = { title: "Privacy policy (draft)", robots: { index: false } };
-
+import { PageHeader, Prose } from "@/components/content/Content";
+export const metadata: Metadata = { title: "Privacy policy" };
 export default function Page() {
-  return (
-    <>
-      <PageHeader title="Privacy policy" />
-      <div className="container-site max-w-3xl space-y-10">
-        <DraftBanner policy={policies.privacy} />
-        <Prose>
-          <p>
-            This draft lists the topics the final privacy policy needs to cover. Replace it with a policy reviewed for the business before
-            launch.
-          </p>
-          <h2>Topics to cover</h2>
-          <ul>
-            <li>Who operates the store (legal business name and contact): <Pending /></li>
-            <li>What we collect: order details, shipping address and contact email collected at checkout by the payment provider</li>
-            <li>Who we share data with: payment provider, production partner (for fulfillment), carriers</li>
-            <li>Analytics and cookies: a functional cart cookie, a private admin session cookie, and first-party shopping events with a random browser-session identifier. Events contain page paths, event names and product identifiers, not customer names or emails. Marketing pixels are not enabled. Shopping events are retained for up to 90 days and collection respects browser Do Not Track and Global Privacy Control signals</li>
-            <li>Email marketing: only with consent, once a provider is connected</li>
-            <li>Contact messages and newsletter sign-ups are saved in the private admin inbox. Final retention, access and deletion contacts: <Pending /></li>
-            <li>Applicable privacy laws for the regions served: <Pending /></li>
-          </ul>
-        </Prose>
-      </div>
-    </>
-  );
+  return <><PageHeader title="Privacy policy" intro="Effective November 22, 2026" /><div className="container-site max-w-3xl"><Prose>
+    <p>Exclusive Hatz is operated by Mogfit. For privacy questions or requests, email <a href="mailto:exclusivehatzz@gmail.com">exclusivehatzz@gmail.com</a>.</p>
+    <h2>Information we collect</h2><p>When you order, we receive your name, email, shipping address, purchased items, payment status and order reference. Stripe processes your payment details; our website does not store your full card number. We also store messages you send through our contact form and email addresses you voluntarily submit for product updates.</p>
+    <h2>How we use and share information</h2><p>We use this information to process orders, arrange manufacturing and shipping, provide support, handle refunds and disputes, and maintain business records. Our service providers include Stripe for payments, Vercel for hosting and Turso for database storage. We share the information needed to fulfill an order with our fulfillment partner and carriers. Authorized store administrators can access order and support information. We do not sell your personal information or enable advertising pixels on this website.</p>
+    <h2>Cookies and shopping activity</h2><p>A cart cookie remembers your bag for up to 30 days. A private session cookie keeps administrators signed in. First-party shopping analytics use a random browser-session identifier and record page paths, product identifiers and shopping events, without your name or email. Analytics collection respects browser Do Not Track and Global Privacy Control signals. Shopping events are retained for up to 90 days.</p>
+    <h2>Retention and your choices</h2><p>Order and transaction records are retained as needed to fulfill orders, handle disputes and meet recordkeeping obligations. Contact messages and sign-ups are retained until no longer needed or until an applicable deletion request is processed. Email us to request access, correction, deletion or removal from the product-update list. We may need to verify your request and retain records where required for transactions or legal obligations.</p>
+    <h2>Updates</h2><p>We may update this policy as our services change. The effective date above identifies the current version.</p>
+  </Prose></div></>;
 }

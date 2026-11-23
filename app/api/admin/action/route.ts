@@ -1,11 +1,21 @@
 import { isAdmin,privateJson,sameOrigin } from '@/lib/admin/auth.server';
 import { database } from '@/lib/admin/db.server';
+import { validateFulfillment } from '@/lib/admin/fulfillment';
 export async function POST(request:Request){
  if(!sameOrigin(request) || !await isAdmin())return privateJson({error:'Access denied.'},403);
  const raw=await request.text();if(raw.length>4096)return privateJson({error:'Request too large.'},413);
  let data;try{data=JSON.parse(raw);}catch{return privateJson({error:'Invalid request.'},400);}
+ if(!data || typeof data!=='object' || Array.isArray(data))return privateJson({error:'Invalid request.'},400);
  const now=Math.floor(Date.now()/1000),db=database();
- if(data.action==='payout'){
+ if(data.action==='fulfillment'){
+  const order=await db.prepare('SELECT id FROM orders WHERE id=?').bind(String(data.order)).first();
+  if(!order)return privateJson({error:'Order not found.'},404);
+  let update;try{update=validateFulfillment(data);}catch(e){return privateJson({error:(e as Error).message},400);}
+  await db.batch([db.prepare('UPDATE orders SET fulfillment=?,carrier=?,tracking_number=?,tracking_url=? WHERE id=?').bind(update.status,update.carrier,update.tracking,update.url,String(data.order)),db.prepare('INSERT INTO admin_audit(id,action,detail,created) VALUES(?,?,?,?)').bind(crypto.randomUUID(),'fulfillment',JSON.stringify({order:data.order,...update}),now)]);
+ }else if(data.action==='owner_payment'){
+  if(!Number.isSafeInteger(data.amount) || data.amount<=0 || data.amount>100000000 || typeof data.reference!=='string' || data.reference.trim().length<3 || data.reference.length>120 || ![0,1].includes(data.live))return privateJson({error:'Enter a positive amount and a transfer reference.'},400);
+  try{await db.batch([db.prepare('INSERT INTO owner_payments(id,amount,reference,created,live) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),data.amount,data.reference.trim(),now,data.live),db.prepare('INSERT INTO admin_audit(id,action,detail,created) VALUES(?,?,?,?)').bind(crypto.randomUUID(),'record_owner_payment',JSON.stringify({amount:data.amount,reference:data.reference.trim(),live:data.live}),now)]);}catch{return privateJson({error:'That transfer reference is already recorded, or the database is unavailable.'},409);}
+ }else if(data.action==='payout'){
   if(!Number.isSafeInteger(data.amount) || data.amount<=0 || data.amount>100000000 || typeof data.reference!=='string' || data.reference.trim().length<3 || data.reference.length>120)return privateJson({error:'Enter a positive amount and a transfer reference.'},400);
   try{await db.batch([db.prepare('INSERT INTO payouts(id,amount,reference,created,live) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),data.amount,data.reference.trim(),now,data.live===0?0:1),db.prepare('INSERT INTO admin_audit(id,action,detail,created) VALUES(?,?,?,?)').bind(crypto.randomUUID(),'record_payout',JSON.stringify({amount:data.amount,reference:data.reference.trim(),live:data.live}),now)]);}catch{return privateJson({error:'That transfer reference is already recorded, or the database is unavailable.'},409);}
  }else if(data.action==='refund_units'){

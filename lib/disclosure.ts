@@ -32,8 +32,8 @@ export function deliveryCopy(settings: DeliverySettings = deliverySettings): Del
     standard.freeMinQuantity ? ` Free with ${standard.freeMinQuantity}+ hats.` : standard.freeOverCents !== null ? ` Free on orders of ${formatMoney(money(standard.freeOverCents))} or more.` : "";
   return {
     configured: true,
-    production: `Production: ${formatDayRange(settings.productionBusinessDays!)} after your order is accepted.`,
-    shipping: `${standard.label}: ${formatDayRange(standard.transitBusinessDays!)} in transit after it ships, ${price}.${threshold}`,
+    production: settings.totalDeliveryBusinessDays ? `Estimated delivery: ${formatDayRange(settings.totalDeliveryBusinessDays)} from purchase to doorstep, including production.` : `Production: ${formatDayRange(settings.productionBusinessDays!)} after your order is accepted.`,
+    shipping: settings.totalDeliveryBusinessDays ? `U.S. shipping: ${price} for one hat.${threshold}` : `${standard.label}: ${formatDayRange(standard.transitBusinessDays!)} in transit after it ships, ${price}.${threshold}`,
     splitNote:
       settings.splitShipment === "may-ship-separately"
         ? "Orders with more than one hat may arrive in separate packages."

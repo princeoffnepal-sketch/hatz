@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getCommerceConfig } from "@/config/commerce.server";
 import { CART_COOKIE } from "@/lib/cart/server";
 import { getStripe } from "@/lib/checkout/stripe.server";
+import { isPaidStoreSession } from "@/lib/checkout/session";
+import { handlePaidCheckout } from "@/lib/fulfillment/orders.server";
 
 /**
  * Stripe redirects here after payment. We verify the session server-side
@@ -17,9 +19,11 @@ export async function GET(request: NextRequest) {
   }
   try {
     const session = await getStripe().checkout.sessions.retrieve(sessionId);
-    if (session.status !== "complete" || (session.payment_status !== "paid" && session.payment_status !== "no_payment_required")) {
+    if (!isPaidStoreSession(session, mode)) {
       return NextResponse.redirect(cartUrl);
     }
+    // Idempotent backup if the payment webhook has not arrived yet.
+    await handlePaidCheckout(session);
   } catch {
     return NextResponse.redirect(cartUrl);
   }

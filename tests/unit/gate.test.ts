@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { delivery as demoDelivery } from "@/config/delivery";
+import { delivery as storeDelivery } from "@/config/delivery";
 import { policies } from "@/config/policies";
 import { catalog } from "@/data/catalog";
 import { evaluateGate, type GateInput } from "@/lib/checkout/gate";
 import type { Product } from "@/lib/types";
 import { confirmedDelivery } from "./fixtures";
+
+const demoDelivery = { ...storeDelivery, status: 'unconfirmed' as const, totalDeliveryBusinessDays: undefined };
 
 const publishedProduct: Product = {
   ...catalog[0],
@@ -46,6 +48,13 @@ const ready: Partial<GateInput> = {
 };
 
 describe("checkout gate", () => {
+  it("supports manual fulfillment without falsely claiming a delivered test order or measured specs", () => {
+    const result=evaluateGate(input({...ready,mode:'live',products:catalog,delivery:storeDelivery,manualFulfillment:true,requireCompleteSpecs:false,requireTestOrder:false,hasApprovedMapping:()=>false,testOrderValidated:false}));
+    expect(result.checkoutEnabled).toBe(true);
+    expect(result.checks.find(c=>c.id==='supplier')).toMatchObject({ok:false,required:false});
+    expect(result.checks.find(c=>c.id==='test-order')).toMatchObject({ok:false,required:false});
+  });
+
   it("never enables checkout in demo mode, even with everything configured", () => {
     expect(evaluateGate(input()).checkoutEnabled).toBe(false);
     expect(evaluateGate(input({ ...ready, mode: "demo" })).checkoutEnabled).toBe(false);
@@ -57,7 +66,7 @@ describe("checkout gate", () => {
 
   it.each<[string, Partial<GateInput>]>([
     ["placeholder products", { products: catalog }],
-    ["draft policies", { policies: Object.values(policies) }],
+    ["draft policies", { policies: Object.values(policies).map(p => ({...p, status: "draft" as const})) }],
     ["unconfirmed delivery", { delivery: demoDelivery }],
     ["missing supplier mapping", { hasApprovedMapping: () => false }],
     ["no support email", { supportEmail: null }],

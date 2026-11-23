@@ -16,7 +16,8 @@ export async function recordOrder(session:Stripe.Checkout.Session){
  if(quantity<1)throw new Error('Order has no hats');
  const intent=typeof session.payment_intent==='string'?session.payment_intent:session.payment_intent?.id;
  if(!intent)throw new Error('Payment intent missing');
- await database().prepare('INSERT INTO orders(id,payment_intent,created,live,currency,subtotal,total,quantity,items,commission_rate,fulfillment) VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(session.id,intent,session.created,session.livemode?1:0,session.currency??'usd',session.amount_subtotal??0,session.amount_total,quantity,JSON.stringify(items),COMMISSION_PER_HAT,'awaiting_supplier').run();
+ const shipping=session.collected_information?.shipping_details;
+ await database().prepare('INSERT INTO orders(id,payment_intent,created,live,currency,subtotal,total,quantity,items,commission_rate,fulfillment,customer_name,customer_email,shipping_address) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(session.id,intent,session.created,session.livemode?1:0,session.currency??'usd',session.amount_subtotal??0,session.amount_total,quantity,JSON.stringify(items),COMMISSION_PER_HAT,'awaiting_supplier',shipping?.name??session.customer_details?.name??null,session.customer_details?.email??null,shipping?.address?JSON.stringify(shipping.address):null).run();
 }
 export async function recordRefund(charge:Stripe.Charge){
  const intent=typeof charge.payment_intent==='string'?charge.payment_intent:charge.payment_intent?.id;if(!intent)return;
@@ -26,10 +27,11 @@ export async function allOrders(live:number){return (await database().prepare('S
 export async function dashboard(live:number,days:number){
  const all=await allOrders(live),since=Math.floor(Date.now()/1000)-days*86400,orders=all.filter(o=>o.created>=since);
  const payouts=(await database().prepare('SELECT * FROM payouts WHERE live=? ORDER BY created DESC').bind(live).all<{id:string;amount:number;reference:string;created:number}>()).results;
+ const ownerPayments=(await database().prepare('SELECT * FROM owner_payments WHERE live=? ORDER BY created DESC').bind(live).all<{id:string;amount:number;reference:string;created:number}>()).results;
  const events=(await database().prepare('SELECT event,COUNT(*) count,COUNT(DISTINCT session) sessions FROM events WHERE created>=? AND mode=? GROUP BY event').bind(since,live?'live':'demo').all<{event:string;count:number;sessions:number}>()).results;
  const daily=Array.from({length:days},(_,i)=>{const date=new Date(Date.now()-(days-1-i)*86400000).toISOString().slice(0,10);const rows=orders.filter(o=>new Date(o.created*1000).toISOString().slice(0,10)===date);return {date,revenue:rows.reduce((s,o)=>s+o.total,0),units:rows.reduce((s,o)=>s+o.quantity,0)};});
  const totalEarned=all.reduce((s,o)=>s+commissionFor(o).earned,0),paid=payouts.reduce((s,p)=>s+p.amount,0);
- return {days,live,orders:orders.map(o=>({...o,commission:commissionFor(o)})),payouts,events,daily,totals:{orders:orders.length,units:orders.reduce((s,o)=>s+o.quantity,0),gross:orders.reduce((s,o)=>s+o.total,0),refunds:orders.reduce((s,o)=>s+o.refund_amount,0),earned:orders.reduce((s,o)=>s+commissionFor(o).earned,0),held:orders.reduce((s,o)=>s+commissionFor(o).held,0),totalEarned,paid,balance:totalEarned-paid}};
+ return {days,live,orders:orders.map(o=>({...o,commission:commissionFor(o)})),payouts,ownerPayments,events,daily,totals:{orders:orders.length,units:orders.reduce((s,o)=>s+o.quantity,0),gross:orders.reduce((s,o)=>s+o.total,0),refunds:orders.reduce((s,o)=>s+o.refund_amount,0),earned:orders.reduce((s,o)=>s+commissionFor(o).earned,0),held:orders.reduce((s,o)=>s+commissionFor(o).held,0),totalEarned,paid,balance:totalEarned-paid,ownerPaid:ownerPayments.reduce((s,p)=>s+p.amount,0)}};
 }
 
 export async function recordDispute(dispute:Stripe.Dispute,created:number){

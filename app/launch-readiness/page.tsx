@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin/auth.server";
 export const dynamic = "force-dynamic";
 import { PageHeader } from "@/components/content/Content";
@@ -14,7 +14,6 @@ export const metadata: Metadata = { title: "Launch readiness", robots: { index: 
 export default async function LaunchReadinessPage() {
   if(!await isAdmin()) redirect("/admin");
   const gate = getGate();
-  if (gate.mode === "live") notFound();
   const required = gate.checks.filter((c) => c.required);
   const passed = gate.checks.filter((c) => c.ok).length;
 
@@ -27,7 +26,7 @@ export default async function LaunchReadinessPage() {
           <>
             Store mode: <strong className="text-ink">{gate.mode}</strong>. Checkout is{" "}
             <strong className="text-ink">{gate.checkoutEnabled ? "enabled" : "disabled"}</strong>. {passed} of {gate.checks.length} checks pass.
-            {gate.mode === "demo" && " Every check is required for live mode; this page is hidden once live."}
+            {" Required checks control checkout. Operational checks also show work that remains manual or unverified."}
           </>
         }
       />
@@ -47,6 +46,7 @@ export default async function LaunchReadinessPage() {
                     {check.label}
                     <span className="sr-only">{check.ok ? ": passing" : ": not passing"}</span>
                     {required.includes(check) && gate.mode !== "demo" && <span className="ml-2 text-xs font-normal text-ink-soft">required now</span>}
+                    {!check.required && <span className="ml-2 text-xs font-normal text-ink-soft">operational check</span>}
                   </p>
                   {check.details.length > 0 && (
                     <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-sm text-ink-soft">

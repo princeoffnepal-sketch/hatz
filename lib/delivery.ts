@@ -21,13 +21,15 @@ export function validateDelivery(settings: DeliverySettings): DeliveryIssue[] {
   if (settings.status !== "confirmed") {
     issues.push({ field: "status", message: "Delivery settings are not confirmed with the production partner" });
   }
-  range("productionBusinessDays", settings.productionBusinessDays, "Production time");
-  if (
+  if (settings.totalDeliveryBusinessDays) {
+    range("totalDeliveryBusinessDays", settings.totalDeliveryBusinessDays, "Order-to-door delivery time");
+  } else range("productionBusinessDays", settings.productionBusinessDays, "Production time");
+  if (!settings.totalDeliveryBusinessDays && (
     settings.orderCutoffHour === null ||
     !Number.isInteger(settings.orderCutoffHour) ||
     settings.orderCutoffHour < 0 ||
     settings.orderCutoffHour > 23
-  ) {
+  )) {
     issues.push({ field: "orderCutoffHour", message: "Order cutoff hour (0–23) is not set" });
   }
   try {
@@ -48,12 +50,12 @@ export function validateDelivery(settings: DeliverySettings): DeliveryIssue[] {
     issues.push({ field: "services", message: "No shipping service is defined" });
   }
   settings.services.forEach((service, i) => {
-    range(`services[${i}].transitBusinessDays`, service.transitBusinessDays, `${service.label} transit time`);
+    if (!settings.totalDeliveryBusinessDays) range(`services[${i}].transitBusinessDays`, service.transitBusinessDays, `${service.label} transit time`);
     if (service.priceCents === null || !Number.isInteger(service.priceCents) || service.priceCents < 0) {
       issues.push({ field: `services[${i}].priceCents`, message: `${service.label} price is not set` });
     }
   });
-  if (!settings.splitShipment) {
+  if (!settings.totalDeliveryBusinessDays && !settings.splitShipment) {
     issues.push({ field: "splitShipment", message: "Multi-item shipping behavior is not confirmed" });
   }
   return issues;
@@ -141,6 +143,8 @@ export function estimateDelivery(
   totalQuantity = 0,
 ): DeliveryEstimate | null {
   if (!isDeliveryConfigured(settings)) return null;
+  // A duration is confirmed, but exact dates/cutoffs and dispatch dates are not.
+  if (settings.totalDeliveryBusinessDays) return null;
   const service = settings.services.find((s) => s.id === serviceId);
   if (!service?.transitBusinessDays || service.priceCents === null) return null;
   const production = settings.productionBusinessDays!;
@@ -188,6 +192,7 @@ export function shippingPriceFor(service: ShippingService, subtotalAfterDiscount
 
 /** Total business days from order to latest arrival, for checkout delivery estimates. */
 export function totalBusinessDayRange(settings: DeliverySettings, service: ShippingService) {
+  if (settings.totalDeliveryBusinessDays) return settings.totalDeliveryBusinessDays;
   if (!settings.productionBusinessDays || !service.transitBusinessDays) return null;
   const hold = settings.acceptanceHoldBusinessDays;
   return {
