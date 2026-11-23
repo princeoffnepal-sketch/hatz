@@ -15,6 +15,7 @@ describe('hosted checkout parameters',()=>{
   const params=mocks.create.mock.calls[0][0];
   expect(params.line_items[0].price_data.unit_amount).toBe(6500);
   expect(params.line_items[0].quantity).toBe(quantity);
+  expect(params.allowed_payment_method_types).toEqual(['card','link']);
   expect(params.automatic_tax).toEqual({enabled:true});
   expect(params.line_items[0].price_data.tax_behavior).toBe('exclusive');
   expect(params.line_items[0].price_data.product_data.tax_code).toBe('txcd_30060006');

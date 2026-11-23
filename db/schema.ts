@@ -16,3 +16,5 @@ export const audit=sqliteTable('admin_audit',{id:text('id').primaryKey(), action
 export const submissions=sqliteTable('submissions',{id:text('id').primaryKey(),kind:text('kind').notNull(),name:text('name'),email:text('email').notNull(),topic:text('topic'),message:text('message'),created:integer('created').notNull()});
 
 export const disputes=sqliteTable('disputes',{paymentIntent:text('payment_intent').primaryKey(),status:text('status').notNull(),updated:integer('updated').notNull()});
+
+export const stripeEvents=sqliteTable('stripe_events',{id:text('id').primaryKey(),processed:integer('processed').notNull().default(0),leaseUntil:integer('lease_until').notNull(),updated:integer('updated').notNull()},t=>[index('stripe_events_updated').on(t.updated)]);

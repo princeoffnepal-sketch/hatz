@@ -30,13 +30,14 @@ function StatusMessage({ state, unconfiguredText, dark }: { state: FormState; un
   );
 }
 
-/** Newsletter signup. Shows "not connected" (and sends nothing) until NEWSLETTER_ENDPOINT is set. */
+/** Newsletter signup saves to the private database or a configured provider. */
 export function NewsletterForm({ configured }: { configured: boolean }) {
   const [state, action, pending] = useActionState(newsletterAction, idle);
   const id = useId();
   const error = state.status === "invalid" ? state.errors.email : null;
   return (
     <form action={action} noValidate className="max-w-md">
+      <div className="hidden" aria-hidden="true"><label>Company<input name="company" tabIndex={-1} autoComplete="off" /></label></div>
       <label htmlFor={id} className="text-sm font-semibold">
         Email for new designs
       </label>

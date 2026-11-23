@@ -24,6 +24,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!product) return {};
   return {
     title: product.name,
+    alternates: {canonical:`/products/${product.slug}`},
+    openGraph: {title:product.name,description:product.tagline,images:product.images.filter(i=>i.kind==="photo").slice(0,1).map(i=>({url:i.src,alt:product.name}))},
     description: `${product.tagline} ${formatMoney(product.price)}. Made after you order.`,
     robots: product.status === "demo" ? { index: false } : undefined,
   };
@@ -50,11 +52,11 @@ export default async function ProductPage({ params }: { params: Params }) {
       a: (
         <dl className="grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2">
           <dt className="text-ink">Material</dt>
-          <dd>{c.material ?? <Pending>To be confirmed from the supplier specification</Pending>}</dd>
+          <dd>{c.material ?? <Pending>Not specified from the supplier specification</Pending>}</dd>
           <dt className="text-ink">Panels</dt>
-          <dd>{c.panelCount ?? <Pending>To be confirmed</Pending>}</dd>
+          <dd>{c.panelCount ?? <Pending>Not specified</Pending>}</dd>
           <dt className="text-ink">Decoration</dt>
-          <dd>{c.decoration ?? <Pending>To be confirmed with the production partner</Pending>}</dd>
+          <dd>{c.decoration ?? <Pending>Not specified with the production partner</Pending>}</dd>
           <dt className="text-ink">Colors</dt>
           <dd>{product.colors.map((col) => col.name).join(", ")}</dd>
         </dl>
@@ -69,19 +71,19 @@ export default async function ProductPage({ params }: { params: Params }) {
           </p>
           <dl className="mt-3 grid grid-cols-[8rem_1fr] gap-x-4 gap-y-2">
             <dt className="text-ink">Crown</dt>
-            <dd>{product.fit.structure ? `${product.fit.structure[0].toUpperCase()}${product.fit.structure.slice(1)}` : <Pending>To be confirmed</Pending>}</dd>
+            <dd>{product.fit.structure ? `${product.fit.structure[0].toUpperCase()}${product.fit.structure.slice(1)}` : <Pending>Not specified</Pending>}</dd>
             <dt className="text-ink">Profile</dt>
-            <dd>{product.fit.profile ? `${product.fit.profile[0].toUpperCase()}${product.fit.profile.slice(1)}` : <Pending>To be confirmed</Pending>}</dd>
+            <dd>{product.fit.profile ? `${product.fit.profile[0].toUpperCase()}${product.fit.profile.slice(1)}` : <Pending>Not specified</Pending>}</dd>
             <dt className="text-ink">Closure</dt>
-            <dd>{product.fit.closure ?? (product.sizes.length ? "Sized (no adjustment)" : <Pending>To be confirmed</Pending>)}</dd>
+            <dd>{product.fit.closure ?? (product.sizes.length ? "Sized (no adjustment)" : <Pending>Not specified</Pending>)}</dd>
             <dt className="text-ink">Head size</dt>
             <dd>
               {product.fit.measuredRange
                 ? `${product.fit.measuredRange.minCm}–${product.fit.measuredRange.maxCm} cm`
-                : <Pending>Measured range will be published from approved samples</Pending>}
+                : <Link className="link" href="/help">Contact us for sizing help</Link>}
             </dd>
           </dl>
-          {!product.fit.verified && <p className="mt-3 text-xs">Exact head-size measurements are not available yet. Contact us for sizing help.</p>}
+          {!product.fit.verified && <p className="mt-3 text-xs">An adjustable closure does not guarantee every head size. Ask us before ordering if you need a specific fit.</p>}
           <Link href="/fit-guide" className="link mt-3 inline-block text-ink">
             Read the fit guide
           </Link>

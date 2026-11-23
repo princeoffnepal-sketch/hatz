@@ -23,7 +23,7 @@ export function getStripe(): Stripe {
  * Wallets (Apple Pay, Google Pay, Link) appear automatically on the hosted page
  * when eligible for the device and enabled in the Stripe Dashboard.
  */
-export async function createCheckoutSession(cart: Cart, now = new Date()): Promise<string> {
+export async function createCheckoutSession(cart: Cart, now = new Date(), idempotencyKey?: string): Promise<Stripe.Checkout.Session> {
   const config = getCommerceConfig();
   const siteUrl = config.siteUrl;
   if (!siteUrl) throw new Error("NEXT_PUBLIC_SITE_URL is not set");
@@ -58,6 +58,7 @@ export async function createCheckoutSession(cart: Cart, now = new Date()): Promi
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
+    allowed_payment_method_types: ["card", "link"],
     line_items: cart.lines
       .filter((line) => line.available)
       .map((line) => ({
@@ -99,8 +100,8 @@ export async function createCheckoutSession(cart: Cart, now = new Date()): Promi
     },
     success_url: `${siteUrl}/checkout/complete?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${siteUrl}/cart?checkout=cancelled`,
-  });
+  }, idempotencyKey ? {idempotencyKey} : undefined);
 
   if (!session.url) throw new Error("Stripe did not return a checkout URL");
-  return session.url;
+  return session;
 }

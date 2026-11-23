@@ -1,0 +1,21 @@
+import {describe,it,expect,vi,beforeEach} from 'vitest';
+import {buildCart} from '@/lib/cart/core';
+import {catalog} from '@/data/catalog';
+import {delivery} from '@/config/delivery';
+const mocks=vi.hoisted(()=>({cookies:new Map<string,string>(),allow:vi.fn(),create:vi.fn(),retrieve:vi.fn()}));
+vi.mock('next/headers',()=>({cookies:async()=>({get:(key:string)=>mocks.cookies.has(key)?{value:mocks.cookies.get(key)}:undefined,set:(k:string,v:string)=>mocks.cookies.set(k,v)})}));
+vi.mock('@/lib/abuse.server',()=>({allowRequest:mocks.allow}));
+vi.mock('@/lib/checkout/gate.server',()=>({getGate:()=>({checkoutEnabled:true})}));
+vi.mock('@/config/commerce.server',()=>({getCommerceConfig:()=>({mode:'live',stripe:{automaticTax:true}})}));
+vi.mock('@/lib/checkout/stripe.server',()=>({createCheckoutSession:mocks.create,getStripe:()=>({checkout:{sessions:{retrieve:mocks.retrieve}}})}));
+import {beginCheckout} from '@/lib/checkout/adapter.server';
+const cart=buildCart([{v:catalog[0].variants[0].id,q:1}],catalog,delivery);
+const session={id:'cs_live_'+ 'a'.repeat(32),url:'https://checkout.stripe.com/example',status:'open',metadata:{store:'exclusive-hatz'}};
+beforeEach(()=>{vi.clearAllMocks();mocks.cookies.clear();mocks.allow.mockResolvedValue(true);mocks.create.mockResolvedValue(session);mocks.retrieve.mockResolvedValue(session);});
+describe('safe checkout retries',()=>{
+ it('reuses an open checkout for an unchanged bag',async()=>{await beginCheckout(cart);await beginCheckout(cart);expect(mocks.create).toHaveBeenCalledOnce();expect(mocks.retrieve).toHaveBeenCalledWith(session.id);});
+ it('uses a new idempotency key after a completed payment',async()=>{await beginCheckout(cart);mocks.retrieve.mockResolvedValue({...session,status:'complete'});await beginCheckout(cart);expect(mocks.create).toHaveBeenCalledTimes(2);expect(mocks.create.mock.calls[1][2]).not.toBe(mocks.create.mock.calls[0][2]);});
+ it('does not reuse checkout after quantities change',async()=>{await beginCheckout(cart);await beginCheckout(buildCart([{v:catalog[0].variants[0].id,q:2}],catalog,delivery));expect(mocks.create).toHaveBeenCalledTimes(2);expect(mocks.create.mock.calls[1][2]).not.toBe(mocks.create.mock.calls[0][2]);});
+ it('rate limits creation before making a Stripe call',async()=>{mocks.allow.mockResolvedValue(false);expect((await beginCheckout(cart)).kind).toBe('error');expect(mocks.create).not.toHaveBeenCalled();});
+ it('does not expose provider errors to shoppers',async()=>{mocks.create.mockRejectedValueOnce(new Error('private provider detail'));const result=await beginCheckout(cart);expect(JSON.stringify(result)).not.toContain('private provider');expect(result.kind).toBe('error');});
+});

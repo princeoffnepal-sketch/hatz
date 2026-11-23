@@ -16,7 +16,8 @@ Next.js storefront prepared for **Vercel**, with Stripe Checkout and a protected
 | `NEXT_PUBLIC_SITE_URL` | Public HTTPS origin; used for canonical URLs and Stripe redirects |
 | `TURSO_DATABASE_URL` | Persistent remote libSQL database URL |
 | `TURSO_AUTH_TOKEN` | Server-only database credential |
-| `ADMIN_PASSWORD_HASH` | Generated with `npm run admin:password` |
+| `ADMIN_PASSWORD_HASH` | Generated with `npm run admin:password`; changing it invalidates existing admin sessions |
+| `RATE_LIMIT_SECRET` | Random server-only secret used to pseudonymize client addresses for rate limits |
 | `STRIPE_SECRET_KEY` | Stripe server-side test/live key |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/stripe/webhook` |
 | `STRIPE_AUTOMATIC_TAX` | `false` until merchant tax settings are ready |
@@ -45,7 +46,7 @@ The website partner collects the full payment, retains **$7 per eligible paid ha
 
 Register these snapshot webhook events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.updated`, `charge.dispute.closed`. The endpoint is `/api/stripe/webhook`; its API version matches the installed Stripe SDK. Update sensitive `STRIPE_SECRET_KEY` and redeploy when rotating the API key. Keep the existing webhook secret unless rotating that endpoint's signing secret too.
 
-Stripe Tax is controlled by `STRIPE_AUTOMATIC_TAX`; enable only after configuring the merchant's tax settings and applicable registrations. No real charge, refund, supplier submission or bank transfer is performed by deployment. Public indexing remains disabled until the merchant is ready to promote the store.
+Stripe Tax is controlled by `STRIPE_AUTOMATIC_TAX`; enable only after configuring the merchant's tax settings and applicable registrations. No real charge, refund, supplier submission or bank transfer is performed by deployment. Public catalog pages are indexable and included in `/sitemap.xml`; admin, checkout, order, cart and search pages are excluded. Preview deployments remain blocked in robots.txt.
 
 ## Local development
 
@@ -68,3 +69,15 @@ Main edit locations: `data/catalog.ts`, `config/site.ts`, `config/delivery.ts`, 
 The original Sites deployment and database are separate. This GitHub repository contains source and schema only: **no existing orders, admin sessions, contacts, analytics rows, secrets or database contents are migrated**. Keep or securely export any old operational data before deleting the old hosting project.
 
 Official deployment references: [Next.js on Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs), [Vercel environment variables](https://vercel.com/docs/environment-variables), [Turso libSQL TypeScript client](https://docs.turso.tech/sdk/ts/reference).
+
+## Public-launch security and operating limits
+
+- Per-request nonce CSP, anti-framing headers, no-referrer policy, HTTPS-only cookies, no caching/indexing of private order/admin pages, and small bounded request bodies.
+- Vercel edge IP-based limits for login, checkout, order lookup, analytics and forms. Raw IPs are not stored; keyed hashes change daily. Do not run behind an untrusted proxy or reuse these IP assumptions on another host without adapting them.
+- Checkout prices remain server-owned. Identical open checkouts are reused with Stripe idempotency keys; paid/expired attempts get a new key. This prevents accidental session creation on ordinary retries; it is not a guarantee against a shopper deliberately purchasing twice.
+- Hatz checkout allows compatible cards and Link (including eligible card wallets), rather than delayed bank-debit methods. The paid webhook remains the authority for fulfillment. Automatic tax uses the Hats category, not the Mogfit app default.
+- Signed webhooks have durable event deduplication with retry leases. Refunds arriving before checkout are retained only after verifying Hatz payment metadata. Test/live and other-store events do not become Hatz orders.
+- The shared admin credential grants full access. Give it only to the authorized operator and owner. For a larger staff, add separate accounts with MFA and individual audit identities before expanding access. Never publish the private access file.
+- Rotate any Stripe API key exposed in chat using Stripe Dashboard, replace `STRIPE_SECRET_KEY` in Vercel Production and redeploy; revoke the old key after verifying the replacement. Code changes cannot revoke an exposed key. Keep the existing webhook signing secret unless rotating it separately.
+- Manual fulfillment, customer shipping updates, return instructions and owner settlements remain operational responsibilities. Do not promise an automatic supplier integration or outbound email service until a provider is connected. Complete a real paid/refund/fulfillment rehearsal before a large promotion; automated tests do not prove delivery.
+- No load capacity is claimed. Monitor Vercel/Stripe errors and Turso usage during traffic growth; provider plan quotas and denial-of-service protection remain outside application unit tests.

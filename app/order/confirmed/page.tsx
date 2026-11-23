@@ -1,3 +1,5 @@
+import { SESSION_ID } from "@/lib/security";
+import { allowRequest } from "@/lib/abuse.server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -22,9 +24,10 @@ function formatIsoDate(iso: string | undefined) {
 
 async function Confirmation({ searchParams }: { searchParams: SearchParams }) {
   const raw = (await searchParams).session_id;
-  const sessionId = typeof raw === "string" && /^cs_[A-Za-z0-9_]+$/.test(raw) ? raw : null;
+  const sessionId = typeof raw === "string" && SESSION_ID.test(raw) ? raw : null;
   if (getCommerceConfig().mode === "demo" || !sessionId) notFound();
 
+  if (!await allowRequest("order-lookup",60,600)) return <p>Please wait a few minutes before checking this order again.</p>;
   const session = await getStripe()
     .checkout.sessions.retrieve(sessionId, { expand: ["line_items"] })
     .catch(() => null);

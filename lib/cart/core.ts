@@ -20,12 +20,12 @@ export function clampQuantity(quantity: number) {
 }
 
 export function parseStoredCart(raw: string | undefined | null): StoredLine[] {
-  if (!raw) return [];
+  if (!raw || raw.length>4096) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     const merged = new Map<string, number>();
-    for (const item of parsed) {
+    for (const item of parsed.slice(0,MAX_LINES*2)) {
       if (
         item &&
         typeof item === "object" &&

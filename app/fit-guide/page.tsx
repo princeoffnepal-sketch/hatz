@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader, Pending } from "@/components/content/Content";
+import { PageHeader } from "@/components/content/Content";
 import { ProductImage } from "@/components/ProductImage";
 import { FitGuideTracker } from "@/components/content/FitGuideTracker";
 import { fitFamilies } from "@/data/catalog";
@@ -21,7 +21,7 @@ export default function FitGuidePage() {
       <PageHeader
         eyebrow="Fit guide"
         title="Find the shape that suits you."
-        intro="Our collection features adjustable snapbacks. Check each product gallery for the shape, details and closure. Exact head-size measurements are not available yet."
+        intro="Our collection features adjustable snapbacks. Check each product gallery for the shape, details and closure. Contact us if you need help with a specific head size."
       />
 
       <section aria-labelledby="compare-title" className="container-site">
@@ -47,47 +47,7 @@ export default function FitGuidePage() {
           })}
         </div>
 
-        <div className="mt-10 overflow-x-auto">
-          <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
-            <caption className="mb-3 text-left text-xs text-ink-soft">
-              Exact measurements will be added when available.
-            </caption>
-            <thead>
-              <tr className="border-b border-ink">
-                <th scope="col" className="py-3 pr-4 font-semibold">
-                  &nbsp;
-                </th>
-                {families.map((f) => (
-                  <th key={f.id} scope="col" className="py-3 pr-4 font-semibold">
-                    {f.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              <tr>
-                <th scope="row" className="py-3 pr-4 font-medium">Crown</th>
-                {families.map((f) => <td key={f.id} className="py-3 pr-4">{f.structure}</td>)}
-              </tr>
-              <tr>
-                <th scope="row" className="py-3 pr-4 font-medium">Profile</th>
-                {families.map((f) => <td key={f.id} className="py-3 pr-4">{f.profile}</td>)}
-              </tr>
-              <tr>
-                <th scope="row" className="py-3 pr-4 font-medium">Head circumference</th>
-                {families.map((f) => <td key={f.id} className="py-3 pr-4"><Pending /></td>)}
-              </tr>
-              <tr>
-                <th scope="row" className="py-3 pr-4 font-medium">Crown height</th>
-                {families.map((f) => <td key={f.id} className="py-3 pr-4"><Pending /></td>)}
-              </tr>
-              <tr>
-                <th scope="row" className="py-3 pr-4 font-medium">Brim length</th>
-                {families.map((f) => <td key={f.id} className="py-3 pr-4"><Pending /></td>)}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <p className="mt-8 max-w-2xl text-ink-soft">Each design has an adjustable snapback closure. An adjustable fit may not suit every head size. If you need a specific fit, send us your measurement and design name before ordering.</p>
       </section>
 
       <section aria-labelledby="measure-title" className="container-site mt-16 grid items-center gap-10 md:mt-24 md:grid-cols-2 md:gap-16">
@@ -116,7 +76,7 @@ export default function FitGuidePage() {
               "Use a soft tape measure, or a piece of string and a ruler.",
               "Wrap it around your head about a finger's width above your eyebrows and just above your ears.",
               "Keep it level and snug, not tight. Note the measurement in centimeters or inches.",
-              "Compare it with the measured range on the product page once ranges are published.",
+              "Send us your measurement and the design name if you need help deciding before you order.",
             ].map((step, i) => (
               <li key={step} className="flex gap-4">
                 <span className="font-mono text-sm text-ink">0{i + 1}</span>

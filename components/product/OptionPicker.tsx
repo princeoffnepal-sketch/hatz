@@ -104,7 +104,7 @@ export function OptionPicker({ product, colorId, sizeId, onColorChange, onSizeCh
             })}
           </div>
           <p id={`${uid}-size-help`} className="mt-2 text-xs text-ink-soft">
-            Measured size ranges will be published once confirmed from approved samples.
+            Contact us with your head measurement for sizing help.
           </p>
           {sizeError && (
             <p id={`${uid}-size-error`} className="mt-2 text-sm font-medium text-alert">
@@ -121,7 +121,7 @@ export function OptionPicker({ product, colorId, sizeId, onColorChange, onSizeCh
           <p className="mt-1 text-xs text-ink-soft">
             {product.fit.measuredRange
               ? `Fits approximately ${product.fit.measuredRange.minCm}–${product.fit.measuredRange.maxCm} cm head circumference.`
-              : "Adjustable range will be published once measured from approved samples."}{" "}
+              : "Need a specific fit? Contact us with your head measurement."}{" "}
             <Link
               href={`/fit-guide?from=${product.slug}`}
               className="link text-ink"

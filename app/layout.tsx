@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import { Suspense } from "react";
@@ -18,8 +19,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: `${site.name} · Made-to-order hats`, template: `%s · ${site.name}` },
   description: site.shortDescription,
-  robots: { index: false, follow: false },
-  openGraph: { siteName: site.name, type: "website" },
+  robots: { index: true, follow: true },
+  openGraph: { siteName: site.name, type: "website", images: [{url:"/brand/wordmark.png",width:1254,height:1254,alt:site.name}] },
+  twitter: {card:"summary_large_image"},
 };
 
 export const viewport: Viewport = {
@@ -28,7 +30,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  await connection();
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body className="min-h-dvh">
