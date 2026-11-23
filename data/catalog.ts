@@ -12,7 +12,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5500,
       "currency": "USD"
     },
     "colors": [
@@ -29,7 +29,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5500,
           "currency": "USD"
         },
         "available": true
@@ -125,7 +125,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5500,
       "currency": "USD"
     },
     "colors": [
@@ -142,7 +142,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5500,
           "currency": "USD"
         },
         "available": true
@@ -228,7 +228,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5000,
       "currency": "USD"
     },
     "colors": [
@@ -245,7 +245,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5000,
           "currency": "USD"
         },
         "available": true
@@ -341,7 +341,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5000,
       "currency": "USD"
     },
     "colors": [
@@ -358,7 +358,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5000,
           "currency": "USD"
         },
         "available": true
@@ -454,7 +454,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5000,
       "currency": "USD"
     },
     "colors": [
@@ -471,7 +471,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5000,
           "currency": "USD"
         },
         "available": true
@@ -567,7 +567,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5000,
       "currency": "USD"
     },
     "colors": [
@@ -584,7 +584,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5000,
           "currency": "USD"
         },
         "available": true
@@ -680,7 +680,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5000,
       "currency": "USD"
     },
     "colors": [
@@ -697,7 +697,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5000,
           "currency": "USD"
         },
         "available": true
@@ -793,7 +793,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5500,
       "currency": "USD"
     },
     "colors": [
@@ -810,7 +810,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5500,
           "currency": "USD"
         },
         "available": true
@@ -906,7 +906,7 @@ export const catalog: Product[] = [
       "verified": true
     },
     "price": {
-      "amount": 6500,
+      "amount": 5500,
       "currency": "USD"
     },
     "colors": [
@@ -923,7 +923,7 @@ export const catalog: Product[] = [
         "colorId": "as-shown",
         "sizeId": null,
         "price": {
-          "amount": 6500,
+          "amount": 5500,
           "currency": "USD"
         },
         "available": true

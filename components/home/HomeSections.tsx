@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatMoney } from "@/lib/money";
 import { site } from "@/config/site";
 import { reviews } from "@/data/reviews";
 import { primaryImage } from "@/lib/catalog";
@@ -14,12 +15,12 @@ export function Hero({ lead, second }: { lead: Product; second: Product }) {
   return <><section className="exclusive-hero" aria-labelledby="hero-title"><div className="container-site hero-inner">
     <div><p className="eyebrow enter">EXCLUSIVE HATZ / SNAPBACKS</p><h1 id="hero-title" className="enter enter-delay-1 mt-6">Make your<br />mark.</h1><p className="hero-copy enter enter-delay-2">{site.copy.hero.body}</p>
     <div className="flex flex-wrap gap-5 items-center enter enter-delay-3"><Link href="/shop" className="btn btn-light px-8">Shop the collection</Link><Link href="/shipping" className="link text-sm">Free shipping with 2+ hats</Link></div>
-    <p className="mt-9 text-sm text-night-soft">Every snapback $65 · Made to order</p></div>
-    <div className="hero-product enter enter-delay-2"><ProductLink href={`/products/${lead.slug}`} listId="home_hero" item={{ item_id: lead.id, item_name: lead.name, price: 65 }} className="block group">
+    <p className="mt-9 text-sm text-night-soft">Snapbacks from $50 · Made to order</p></div>
+    <div className="hero-product enter enter-delay-2"><ProductLink href={`/products/${lead.slug}`} listId="home_hero" item={{ item_id: lead.id, item_name: lead.name, price: lead.price.amount / 100 }} className="block group">
       <ProductImage image={primaryImage(lead)} sizes="(min-width: 768px) 48vw, 100vw" priority />
-      <div className="flex justify-between gap-4 p-5 text-sm"><span>{lead.name}</span><span>$65</span></div>
+      <div className="flex justify-between gap-4 p-5 text-sm"><span>{lead.name}</span><span>{formatMoney(lead.price)}</span></div>
     </ProductLink><span className="hero-photo-caption">The details do the talking.</span></div>
-    </div></section><div className="brand-ribbon"><span>9 standout snapbacks</span><span>$65 each</span><span>Free shipping with 2+ hats</span></div></>;
+    </div></section><div className="brand-ribbon"><span>9 standout snapbacks</span><span>$50–$55</span><span>Free shipping with 2+ hats</span></div></>;
 }
 
 export function FeaturedDesigns({ products }: { products: Product[] }) {
@@ -58,7 +59,7 @@ export function ProcessSteps() {
     {
       icon: "cursor" as const,
       title: "Choose your design",
-      text: "Choose your snapback in the exact color shown in the photos. Every hat is $65.",
+      text: "Choose your snapback in the exact color shown in the photos. Snapbacks start at $50.",
       timing: "Order placed",
     },
     {

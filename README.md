@@ -1,5 +1,7 @@
 # Exclusive Hatz
 
+Production: https://www.exclusivehatz.com (the bare domain redirects to www).
+
 Next.js storefront prepared for **Vercel**, with Stripe Checkout and a protected admin dashboard. This repository does not use Shopify or require Cloudflare Workers/Sites.
 
 ## Deploy to Vercel
@@ -27,7 +29,7 @@ Never put credentials in `NEXT_PUBLIC_` variables. Vercel environment changes re
 
 ## Store behavior
 
-- Nine snapbacks, 35 original owner-supplied photos, **$65 each**.
+- Nine snapbacks, 35 original owner-supplied photos, **$50–$55 each** (Club América, Saint & Cross, Teddy and Corridos Tumbados: $55; other designs: $50).
 - U.S. only. **$7.50 shipping for one hat; free for 2+ payable hats**, including mixed designs.
 - Merchant-confirmed estimated delivery: **3–5 business days from purchase to doorstep, including production**. Exact dispatch dates and calendar arrival dates are not invented.
 - Operated by **Mogfit**. Customer card statements show MOGFIT; this is disclosed at checkout. Support: `exclusivehatzz@gmail.com`.
@@ -36,7 +38,7 @@ Never put credentials in `NEXT_PUBLIC_` variables. Vercel environment changes re
 
 ## Payments and manual operations
 
-Production uses Stripe-hosted Checkout with live credentials stored as sensitive Vercel variables, never in Git. The $65 catalog prices and $7.50/free-at-two shipping rules are calculated on the server. The webhook handles paid orders, refunds and disputes; checkout return verification is an idempotent backup for delayed webhooks. Only paid sessions marked `store=exclusive-hatz` from the matching live/test mode produce order confirmations.
+Production uses Stripe-hosted Checkout with live credentials stored as sensitive Vercel variables, never in Git. The $50–$55 catalog prices and $7.50/free-at-two shipping rules are calculated on the server. The webhook handles paid orders, refunds and disputes; checkout return verification is an idempotent backup for delayed webhooks. Only paid sessions marked `store=exclusive-hatz` from the matching live/test mode produce order confirmations.
 
 The merchant opted to launch with manual fulfillment and without a completed real purchase/delivery test. `config/launch.ts` records that policy; it does not claim an order was tested or delivered. Real photos and published descriptions are required; unmeasured specifications remain unpublished. Supplier automation and a fulfilled test order remain visible operational checks in the protected launch page. Core payment, delivery, catalog, policy and business-contact checks still gate checkout.
 

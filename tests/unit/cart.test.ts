@@ -16,18 +16,18 @@ import {
 import { formatMoney } from "@/lib/money";
 import { confirmedDelivery } from "./fixtures";
 
-const vFirst = "design-01-as-shown"; // $65
-const vSecond = "design-04-as-shown"; // $65
+const vFirst = "design-01-as-shown"; // $55
+const vSecond = "design-04-as-shown"; // $50
 const unavailable = "test-unavailable";
 
 describe("cart arithmetic", () => {
   it("computes line totals and subtotal in integer cents", () => {
     const lines = addLine(addLine([], vFirst, 2), vSecond, 1);
     const cart = buildCart(lines, catalog, demoDelivery);
-    expect(cart.lines.map((l) => l.lineTotal.amount)).toEqual([13000, 6500]);
-    expect(cart.subtotal.amount).toBe(19500);
+    expect(cart.lines.map((l) => l.lineTotal.amount)).toEqual([11000, 5000]);
+    expect(cart.subtotal.amount).toBe(16000);
     expect(cart.totalQuantity).toBe(3);
-    expect(formatMoney(cart.subtotal)).toBe("$195");
+    expect(formatMoney(cart.subtotal)).toBe("$160");
   });
 
   it("merges repeated adds of the same variant and clamps to the per-line maximum", () => {
@@ -56,7 +56,7 @@ describe("variant / cart consistency", () => {
   it("derives names, color, size, price and image from the catalog, not from storage", () => {
     const cart = buildCart([{ v: "design-05-as-shown", q: 1 }], catalog, demoDelivery);
     const line = cart.lines[0];
-    expect(line).toMatchObject({ name: "Angel & Devil", colorName: "Black / silver-tone / red", sizeName: null, unitPrice: { amount: 6500 } });
+    expect(line).toMatchObject({ name: "Angel & Devil", colorName: "Black / silver-tone / red", sizeName: null, unitPrice: { amount: 5000 } });
     expect(line.image?.src).toBe("/products/angel-and-devil/01-front.png");
   });
 
@@ -69,7 +69,7 @@ describe("variant / cart consistency", () => {
   it("keeps unavailable variants visible but excludes them from totals and blocks checkout", () => {
     const cart = buildCart([{ v: unavailable, q: 2 }, { v: vFirst, q: 1 }], [...catalog, { ...catalog[1], variants: [{ ...catalog[1].variants[0], id: unavailable, available: false }] }], demoDelivery);
     expect(cart.lines).toHaveLength(2);
-    expect(cart.subtotal.amount).toBe(6500);
+    expect(cart.subtotal.amount).toBe(5500);
     expect(cart.totalQuantity).toBe(1);
     expect(cartHasBlockingLines(cart)).toBe(true);
   });
@@ -89,7 +89,7 @@ describe("cart persistence format", () => {
   it("ignores tampered price fields and recomputes from the catalog", () => {
     const tampered = JSON.stringify([{ v: vSecond, q: 1, unitPrice: 1, price: 0 }]);
     const cart = buildCart(parseStoredCart(tampered), catalog, demoDelivery);
-    expect(cart.subtotal.amount).toBe(6500);
+    expect(cart.subtotal.amount).toBe(5000);
   });
 
   it.each([undefined, "", "not json", "{}", '[{"v":1,"q":1}]', '[{"v":"a","q":0}]', '[{"v":"a","q":-3}]'])(

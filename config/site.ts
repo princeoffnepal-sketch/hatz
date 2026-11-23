@@ -9,7 +9,7 @@
 export const site = {
   name: "Exclusive Hatz",
   /** Used in <title> templates and metadata. */
-  shortDescription: "Statement snapbacks. $65 each. Free U.S. shipping with 2+ hats.",
+  shortDescription: "Statement snapbacks. $50–$55. Free U.S. shipping with 2+ hats.",
   /** Optional logo file in /public. When null, the text wordmark is used. */
   logo: { src: "/brand/wordmark.png", width: 1254, height: 1254 },
 

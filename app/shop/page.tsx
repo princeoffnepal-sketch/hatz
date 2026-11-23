@@ -95,7 +95,7 @@ export default function ShopPage({ searchParams }: { searchParams: SearchParams 
       <div className="mb-8 max-w-2xl">
         <h1 className="display text-5xl sm:text-6xl">All hats</h1>
         <p className="mt-3 text-ink-soft">
-          {count} snapbacks. $65 each. Free U.S. shipping with 2+ hats. Colors exactly as photographed.
+          {count} snapbacks. $50–$55. Free U.S. shipping with 2+ hats. Colors exactly as photographed.
         </p>
       </div>
       <Suspense fallback={<div className="h-96" aria-hidden="true" />}>

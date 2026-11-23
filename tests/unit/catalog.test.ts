@@ -6,9 +6,9 @@ import { findVariant, imagesForColor, productLaunchIssues, sortProducts, validat
 import type { Product } from "@/lib/types";
 
 describe("photo catalog", () => {
-  it("has nine $65 snapbacks", () => {
+  it("has five $50 and four $55 snapbacks", () => {
     const prices = catalog.map((p) => p.price.amount).sort();
-    expect(prices).toEqual(Array(9).fill(6500));
+    expect(prices).toEqual([5000,5000,5000,5000,5000,5500,5500,5500,5500]);
     for (const p of catalog) for (const v of p.variants) expect(v.price).toEqual(p.price);
   });
 
@@ -48,7 +48,7 @@ describe("photo catalog", () => {
     };
     walk(catalog);
     expect([...keys].filter((k) => /cost|supplier|margin/i.test(k))).toEqual([]);
-    expect([...amounts].sort()).toEqual([6500]);
+    expect([...amounts].sort()).toEqual([5000,5500]);
   });
 
   it("is blocked from launch while supplier specs remain unverified", () => {
@@ -78,8 +78,8 @@ describe("variant resolution", () => {
   });
 
   it("sorts by price and featured rank", () => {
-    expect(sortProducts(catalog, "price-asc")[0].price.amount).toBe(6500);
-    expect(sortProducts(catalog, "price-desc")[0].price.amount).toBe(6500);
+    expect(sortProducts(catalog, "price-asc")[0].price.amount).toBe(5000);
+    expect(sortProducts(catalog, "price-desc")[0].price.amount).toBe(5500);
     expect(sortProducts(catalog, "featured")[0].id).toBe("design-01");
   });
 });

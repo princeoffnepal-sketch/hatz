@@ -40,7 +40,7 @@ export async function beginCheckout(cart: Cart): Promise<BeginCheckoutResult> {
     if (!await allowRequest('checkout',12,600)) return {kind:'error',message:'Too many checkout attempts. Please wait a few minutes and try again.'};
     const jar=await cookies(), options={httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax' as const,path:'/',maxAge:86400};
     const config=getCommerceConfig();
-    const fingerprint=await digest(JSON.stringify({checkoutVersion:2,mode:config.mode,tax:config.stripe.automaticTax,delivery:delivery.version,lines:cart.lines.map(l=>[l.variantId,l.quantity,l.unitPrice.amount]).sort()}));
+    const fingerprint=await digest(JSON.stringify({checkoutVersion:2,siteUrl:config.siteUrl,mode:config.mode,tax:config.stripe.automaticTax,delivery:delivery.version,lines:cart.lines.map(l=>[l.variantId,l.quantity,l.unitPrice.amount]).sort()}));
     let cartId=jar.get(CART_ID_COOKIE)?.value;
     if(!cartId || !/^[a-f0-9]{64}$/.test(cartId)){cartId=randomToken();jar.set(CART_ID_COOKIE,cartId,options);}
     let cached: {fingerprint?:string;id?:string}={};
