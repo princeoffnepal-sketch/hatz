@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Exclusive Hatz</title>
+  <rect width="64" height="64" rx="10" fill="#111111"/>
+  <g fill="#f7f5f0">
+    <path d="M9 15h21v9l-5-3h-7v8h9v6h-9v8h7l5-3v9H9l3-6V21z"/>
+    <path d="M33 15h11l-2 6v8h7v-8l-2-6h11l-3 6v22l3 6H47l2-6v-8h-7v8l2 6H33l3-6V21z"/>
+    <path d="M10 55q20-7 45-2-22-2-45 4z"/>
+  </g>
+</svg>
