@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useId, useRef } from "react";
-import { contactAction, newsletterAction, type FormState } from "@/lib/forms/actions";
+import { contactAction, type FormState } from "@/lib/forms/actions";
 
 const idle: FormState = { status: "idle" };
 
@@ -27,54 +27,6 @@ function StatusMessage({ state, unconfiguredText, dark }: { state: FormState; un
     <p ref={ref} tabIndex={-1} role={state.status === "error" ? "alert" : "status"} className={`mt-3 text-sm font-medium outline-none ${tone}`}>
       {state.status === "unconfigured" ? unconfiguredText : state.message}
     </p>
-  );
-}
-
-/** Newsletter signup saves to the private database or a configured provider. */
-export function NewsletterForm({ configured }: { configured: boolean }) {
-  const [state, action, pending] = useActionState(newsletterAction, idle);
-  const id = useId();
-  const error = state.status === "invalid" ? state.errors.email : null;
-  return (
-    <form action={action} noValidate className="max-w-md">
-      <div className="hidden" aria-hidden="true"><label>Company<input name="company" tabIndex={-1} autoComplete="off" /></label></div>
-      <label htmlFor={id} className="text-sm font-semibold">
-        Email for new designs
-      </label>
-      <div className="mt-2 flex gap-2">
-        <input
-          id={id}
-          name="email"
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-          required
-          defaultValue={state.status === "invalid" ? state.values.email : undefined}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={`${id}-help${error ? ` ${id}-error` : ""}`}
-          className="field border-[#6b6c66] bg-transparent text-ivory placeholder:text-night-soft/70 hover:border-night-soft focus-visible:border-ivory"
-          placeholder="name@example.com"
-        />
-        <button type="submit" className="btn btn-light shrink-0" disabled={pending}>
-          {pending ? "Sending…" : "Sign up"}
-        </button>
-      </div>
-      {error && (
-        <p id={`${id}-error`} className="mt-2 text-sm font-medium text-[#f0b4a6]">
-          {error}
-        </p>
-      )}
-      <p id={`${id}-help`} className="mt-2 text-xs text-night-soft">
-        {configured
-          ? "Sign up for occasional emails about new designs. Your address is saved to our private list."
-          : "Email signup isn't connected yet. Submitting won't send or store your address."}
-      </p>
-      <StatusMessage
-        state={state}
-        dark
-        unconfiguredText="Not sent: email signup isn't connected yet. Your address wasn't stored."
-      />
-    </form>
   );
 }
 

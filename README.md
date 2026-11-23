@@ -21,7 +21,7 @@ Next.js storefront prepared for **Vercel**, with Stripe Checkout and a protected
 | `STRIPE_SECRET_KEY` | Stripe server-side test/live key |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/stripe/webhook` |
 | `STRIPE_AUTOMATIC_TAX` | `false` until merchant tax settings are ready |
-| `CONTACT_FORM_ENDPOINT`, `NEWSLETTER_ENDPOINT` | Optional forwarding endpoints; otherwise use the database inbox |
+| `CONTACT_FORM_ENDPOINT` | Optional forwarding endpoints; otherwise use the database inbox |
 
 Never put credentials in `NEXT_PUBLIC_` variables. Vercel environment changes require a new deployment. No database credentials means browsing/cart still work; persistent admin, analytics and inbox features require database setup. Local files must not be used as production storage on Vercel.
 
@@ -81,3 +81,5 @@ Official deployment references: [Next.js on Vercel](https://vercel.com/docs/fram
 - Rotate any Stripe API key exposed in chat using Stripe Dashboard, replace `STRIPE_SECRET_KEY` in Vercel Production and redeploy; revoke the old key after verifying the replacement. Code changes cannot revoke an exposed key. Keep the existing webhook signing secret unless rotating it separately.
 - Manual fulfillment, customer shipping updates, return instructions and owner settlements remain operational responsibilities. Do not promise an automatic supplier integration or outbound email service until a provider is connected. Complete a real paid/refund/fulfillment rehearsal before a large promotion; automated tests do not prove delivery.
 - No load capacity is claimed. Monitor Vercel/Stripe errors and Turso usage during traffic growth; provider plan quotas and denial-of-service protection remain outside application unit tests.
+
+New-design email signup is disabled. The public form and signup server action are removed; existing subscriber records remain available to authorized administrators. Contact support continues to work.

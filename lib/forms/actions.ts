@@ -61,21 +61,3 @@ export async function contactAction(_prev: FormState, formData: FormData): Promi
     ? { status: "sent", message: "Thanks. Your message was delivered to our support inbox.", at }
     : { status: "error", message: "Your message couldn't be delivered. Please try again later.", at };
 }
-
-export async function newsletterAction(_prev: FormState, formData: FormData): Promise<FormState> {
-  const at = Date.now();
-  if (field(formData,"company",200)) return {status:"error",message:"Your sign-up could not be saved.",at};
-  const email = field(formData, "email", 200).toLowerCase();
-  if (!EMAIL.test(email)) {
-    return { status: "invalid", errors: { email: "Enter an email address like name@example.com." }, values: { email }, at };
-  }
-  try { if (!await allowRequest("newsletter",5,3600)) return {status:"error",message:"Please try again later.",at}; } catch { return {status:"error",message:"Sign-up is temporarily unavailable.",at}; }
-  const endpoint = runtime("NEWSLETTER_ENDPOINT");
-  if (!endpoint) {
-    if (!databaseConfigured()) return { status: "unconfigured", at };
-    try {const existing=await database().prepare("SELECT id FROM submissions WHERE kind=? AND email=? LIMIT 1").bind("newsletter",email).first();if(existing)return {status:"sent",message:"You’re on the list. Thanks for signing up.",at};await database().prepare("INSERT INTO submissions(id,kind,email,created) VALUES(?,?,?,?)").bind(crypto.randomUUID(),"newsletter",email,Math.floor(at/1000)).run();return {status:"sent",message:"You’re on the list. Thanks for signing up.",at};}catch{return {status:"error",message:"We could not save your sign-up. Please try again.",at};}
-  }
-  return (await forward(endpoint, { email }))
-    ? { status: "sent", message: "Thanks. Your sign-up was received.", at }
-    : { status: "error", message: "We couldn't sign you up right now. Please try again later.", at };
-}

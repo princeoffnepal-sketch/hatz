@@ -1,8 +1,6 @@
-import { databaseConfigured, runtime } from "@/lib/admin/db.server";
 import Link from "next/link";
 import { site } from "@/config/site";
 import { isDemoCatalog } from "@/lib/catalog.server";
-import { NewsletterForm } from "../forms/Forms";
 import { Wordmark } from "./Wordmark";
 
 const SOCIAL_LABELS: Record<keyof typeof site.social, string> = {
@@ -24,9 +22,6 @@ export function Footer() {
         <div>
           <Wordmark className="text-lg" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-night-soft">{site.shortDescription}</p>
-          <div className="mt-8">
-            <NewsletterForm configured={databaseConfigured() || Boolean(runtime("NEWSLETTER_ENDPOINT"))} />
-          </div>
         </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
           {site.footerNav.map((group) => (
